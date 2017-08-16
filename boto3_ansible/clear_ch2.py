@@ -1,5 +1,5 @@
-import boto3
 import json
+import boto3
 from util import create_ec2_client, create_ec2_resource
 
 
@@ -70,7 +70,7 @@ def delete_each_vpc_items(ec2_client, aws):
     delete_subnet(ec2_client, aws['public_subnet_id'])
 
     # VPC領域の削除
-    delete_vpc(client, aws_keys['vpc_id'])
+    delete_vpc(ec2_client, aws_keys['vpc_id'])
 
 
 if __name__ == '__main__':

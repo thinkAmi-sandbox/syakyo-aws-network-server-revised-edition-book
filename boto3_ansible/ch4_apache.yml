@@ -1,0 +1,8 @@
+# hostsにはhostsファイルの[web]かホスト名(webserver)を指定する
+- hosts: webserver
+  become: yes
+  tasks:
+    - name: install Apache
+      yum: name=httpd
+    - name: Apache running and enabled
+      service: name=httpd state=started enabled=yes

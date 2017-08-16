@@ -1,0 +1,7 @@
+Host webserver
+  User ec2-user
+  HostName xxx.xxx.xxx.xxx
+  # IdentityFileはカレントディレクトリに置いておけば良い
+  IdentityFile syakyo_aws_network_server2.pem
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null

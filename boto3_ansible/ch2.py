@@ -1,7 +1,7 @@
-import boto3
-import json
-from util import create_ec2_client, create_ec2_resource, print_response
 import inspect
+import json
+import boto3
+from util import create_ec2_client, create_ec2_resource, print_response
 
 
 def create_vpc(ec2_client):
@@ -31,21 +31,6 @@ def add_vpc_name_tag(ec2_resource, vpc_id):
 
 def describe_vpc(ec2_client):
     # https://boto3.readthedocs.io/en/latest/reference/services/ec2.html#EC2.Client.describe_vpcs
-    # 既存のVPCを全部取得
-    # response = ec2_client.describe_vpcs()
-
-    # availableなVPCのみ
-    # response = ec2_client.describe_vpcs(
-    #     Filters=[
-    #         {
-    #             'Name': 'state',
-    #             'Values': [
-    #                 'available',
-    #             ]
-    #         }
-    #     ]
-    # )
-
     # VPC名でフィルタ
     response = ec2_client.describe_vpcs(
         Filters=[
@@ -72,26 +57,26 @@ def describe_availability_zones(ec2_client):
     return response
 
 
-def create_vpc_subnet(ec2_resource, vpc_id, availability_zone):
+def create_vpc_subnet(ec2_resource, vpc_id, availability_zone, cidr_block):
     # clientとresourceのどちらでもできるが、resourceのほうがオブジェクトが返ってきて扱いやすい
     # https://boto3.readthedocs.io/en/latest/reference/services/ec2.html#EC2.Client.create_subnet
     # https://boto3.readthedocs.io/en/latest/reference/services/ec2.html#EC2.Vpc.create_subnet
     vpc = ec2_resource.Vpc(vpc_id)
     response = vpc.create_subnet(
         AvailabilityZone=availability_zone,
-        CidrBlock='192.168.1.0/24',
+        CidrBlock=cidr_block,
     )
     print_response(inspect.getframeinfo(inspect.currentframe())[2], response)
     # https://boto3.readthedocs.io/en/latest/reference/services/ec2.html#EC2.Subnet
     return response
 
 
-def create_subnet_name_tag(ec2_subnet):
+def create_subnet_name_tag(ec2_subnet, subnet_name):
     # https://boto3.readthedocs.io/en/latest/reference/services/ec2.html#EC2.Subnet.create_tags
     tag = ec2_subnet.create_tags(
         Tags=[{
             'Key': 'Name',
-            'Value': 'パブリックサブネット2'
+            'Value': subnet_name,
         }]
     )
     print_response(inspect.getframeinfo(inspect.currentframe())[2], tag)
@@ -194,10 +179,10 @@ if __name__ == '__main__':
     # 最初のアベイラビリティゾーンを使用するアベイラビリティゾーンとする
     first_zone = zones['AvailabilityZones'][0]['ZoneName']
     print_response('first availability zone', first_zone)
-    subnet = create_vpc_subnet(resource, aws['vpc_id'], first_zone)
+    subnet = create_vpc_subnet(resource, aws['vpc_id'], first_zone, '192.168.1.0/24')
     aws['public_subnet_id'] = subnet.subnet_id
     # サブネットの名前タグを追加
-    create_subnet_name_tag(subnet)
+    create_subnet_name_tag(subnet, 'パブリックサブネット2')
 
     # インターネットゲートウェイの作成
     aws['internet_gateway_id'] = create_internet_gateway(client)

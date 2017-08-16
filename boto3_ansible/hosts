@@ -1,0 +1,3 @@
+[web]
+# ここに記述するホスト名は、ssh_configのHostの値と一致させること
+webserver

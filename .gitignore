@@ -1,6 +1,9 @@
 # myenv
 env362/
 aws.json
+syakyo_aws_network_server2.pem
+ssh_config
+*.retry
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
